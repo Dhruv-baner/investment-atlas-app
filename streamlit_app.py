@@ -312,14 +312,11 @@ def load_data():
             for file_path in file_paths:
                 if os.path.exists(file_path):
                     try:
-                       temp_df = pd.read_csv(file_path)
-                       available_files[file.replace('.csv', '')] = temp_df
-                       st.sidebar.success(f"✅ Loaded {file} ({len(temp_df)} rows)")
-                       break
+                        temp_df = pd.read_csv(file_path)
+                        available_files[file.replace('.csv', '')] = temp_df
+                        break
                     except Exception as e:
-                       st.sidebar.error(f"❌ Error reading {file}: {e}")
-                else:
-                    st.sidebar.warning(f"🔍 File not found: {file_path}")
+                        pass  # Silent failure
         
         # Create main dataframe by combining all state files
         state_dataframes = []
@@ -335,10 +332,8 @@ def load_data():
             # If we got state files, use them. Otherwise fall back to combined file
         if state_dataframes:
             df = pd.concat(state_dataframes, ignore_index=True)
-            st.sidebar.success(f"✅ Combined {len(state_dataframes)} state files")
         elif 'multi_state_economic_analysis' in available_files:
             df = available_files['multi_state_economic_analysis']
-            st.sidebar.info("📊 Using combined multi-state file")
         else:
             st.error("❌ No economic analysis files found!")
             return None, None
@@ -362,15 +357,12 @@ def load_data():
                 'Tier-3': 'Agro-Processing Zone'
             })
 
-            # Debug: Show which states are actually in the data
+            # Clean state information for sidebar
             if df is not None:
-                states_in_data = df['state'].unique()
-                st.sidebar.info(f"🏛️ States in data: {', '.join(states_in_data)}")
-    
-                # Show count by state
-                state_counts = df['state'].value_counts()
-                for state, count in state_counts.items():
-                    st.sidebar.write(f"  • {state}: {count} districts")
+               st.sidebar.markdown("### 🏛️ States & Districts")
+               state_counts = df['state'].value_counts()
+               for state, count in state_counts.items():
+                   st.sidebar.markdown(f"**{state}:** {count} districts")
         
         # Feature importance (create if not available)
         if 'feature_importance_analysis' in available_files:
@@ -475,7 +467,6 @@ def executive_summary_page(df, feature_importance):
     <div class="problem-statement">
         <h3 class="problem-title">🚨 The Economic Diversification Challenge</h3>
         <p><strong>Core Problem:</strong> India's economic growth is concentrated in 15-20 metro districts, leaving 200+ districts heavily dependent on agriculture with limited access to modern economic opportunities.</p>
-        
         <p><strong>Business Impact:</strong></p>
         <ul>
             <li><strong>Market Inefficiency:</strong> 60% of population in underutilized economic zones</li>
@@ -483,7 +474,6 @@ def executive_summary_page(df, feature_importance):
             <li><strong>Missed Opportunities:</strong> Untapped potential worth ₹10,000+ crores annually</li>
             <li><strong>Regional Inequality:</strong> Widening income gaps between urban and rural areas</li>
         </ul>
-        
         <p><strong>Solution Opportunity:</strong> Systematic identification of high-potential districts for strategic investment and economic diversification.</p>
     </div>
     """, unsafe_allow_html=True)
