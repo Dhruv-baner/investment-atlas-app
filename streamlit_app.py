@@ -359,10 +359,13 @@ def load_data():
 
             # Clean state information for sidebar
             if df is not None:
-               st.sidebar.markdown("### 🏛️ States & Districts")
-               state_counts = df['state'].value_counts()
-               for state, count in state_counts.items():
-                   st.sidebar.markdown(f"**{state}:** {count} districts")
+                st.sidebar.markdown("### 🏛️ States & Districts")
+                state_counts = df['state'].value_counts()
+                states_html = ""
+                for state, count in state_counts.items():
+                    states_html += f"<p style='color: #e2e8f0; margin: 0.2rem 0;'><strong>{state}:</strong> {count} districts</p>"
+    
+                st.sidebar.markdown(states_html, unsafe_allow_html=True)
         
         # Feature importance (create if not available)
         if 'feature_importance_analysis' in available_files:
@@ -419,20 +422,7 @@ def main():
     
     page_key = page_options[selected_page]
     
-    # Add sidebar metrics
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### 📈 Key Metrics")
-    
-    col1, col2 = st.sidebar.columns(2)
-    with col1:
-        st.metric("Districts", len(df), label_visibility="visible")
-        st.metric("States", df['state'].nunique(), label_visibility="visible")
-    with col2:
-        high_potential = len(df[df['ml_predicted_score'] > 100])
-        st.metric("High Potential", high_potential, label_visibility="visible")
-        low_risk = len(df[df['investment_risk_category'] == 'Low Risk, High Return'])
-        st.metric("Low Risk/High Return", low_risk, label_visibility="visible")
-    
+   
     # Page routing
     if page_key == "executive_summary":
         executive_summary_page(df, feature_importance)
@@ -501,22 +491,18 @@ def executive_summary_page(df, feature_importance):
         """, unsafe_allow_html=True)
     
     with col3:
-        high_potential = len(df[df['ml_predicted_score'] > 100])
-        pct = (high_potential / len(df)) * 100
         st.markdown(f"""
         <div class="metric-card">
-            <div class="metric-number">{high_potential}</div>
-            <div class="metric-label">High-Potential Districts ({pct:.0f}%)</div>
+            <div class="metric-number">4</div>
+            <div class="metric-label">States Assessed</div>
         </div>
         """, unsafe_allow_html=True)
-    
+
     with col4:
-        low_risk = len(df[df['investment_risk_category'] == 'Low Risk, High Return'])
-        pct_lr = (low_risk / len(df)) * 100
         st.markdown(f"""
         <div class="metric-card">
-            <div class="metric-number">{low_risk}</div>
-            <div class="metric-label">Low Risk, High Return ({pct_lr:.0f}%)</div>
+            <div class="metric-number">AI</div>
+            <div class="metric-label">Powered Analysis</div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -1367,7 +1353,6 @@ def sector_analysis_page(df):
                 <strong>Job Creation:</strong> {sector_jobs:,} positions<br>
                 <strong>Districts Suitable:</strong> {districts_count}<br>
                 <strong>Avg per District:</strong> ₹{avg_investment:.0f} lakhs<br><br>
-                
                 <strong>Key Success Factors:</strong><br>
                 {sector_data.iloc[0]['rationale'] if len(sector_data) > 0 else 'Strong fundamentals required'}
             </div>
@@ -1683,7 +1668,6 @@ def district_analysis_page(df):
                 <strong>{selected_district}</strong> is a <strong>{district_data['tier']}</strong> district in <strong>{district_data['state']}</strong> 
                 with an AI Investment Score of <strong>{district_data['ml_predicted_score']:.1f}</strong>, 
                 placing it in the <strong>{district_data['investment_risk_category']}</strong> category.
-                
                 <br><br><strong>Key Characteristics:</strong>
                 <ul>
                     <li><strong>Economic Structure:</strong> {district_data['agriculture_share']:.0f}% Agriculture, 
@@ -1711,7 +1695,6 @@ def district_analysis_page(df):
             <div class="insight-title">⚠️ Risk Assessment</div>
             <div class="insight-content">
                 <strong>Category:</strong> {district_data['investment_risk_category']}<br><br>
-                
                 <strong>Investment Readiness:</strong> {district_data['investment_readiness_score']:.1f}/100<br>
                 <strong>Infrastructure Quality:</strong> {district_data['infrastructure_index']:.1f}/100<br>
                 <strong>Economic Diversification:</strong> {100 - district_data['agriculture_share']:.0f}/100
@@ -2065,7 +2048,6 @@ def methodology_page(df):
         <div class="methodology-box">
             <div class="methodology-title">📋 Research Objectives</div>
             <p><strong>Primary Goal:</strong> Develop an AI-powered framework to identify high-potential investment opportunities across Indian districts beyond traditional metro centers.</p>
-            
             <p><strong>Key Research Questions:</strong></p>
             <ul>
                 <li>Which factors most accurately predict investment success in emerging markets?</li>
@@ -2073,7 +2055,6 @@ def methodology_page(df):
                 <li>How do economic development patterns differ across Indian states?</li>
                 <li>What infrastructure investments yield the highest economic returns?</li>
             </ul>
-            
             <p><strong>Business Impact:</strong> Enable data-driven investment decisions for economic diversification across districts in 4 major Indian states.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -2450,16 +2431,13 @@ def about_page():
     with col1:
         st.markdown("""
         <div class="methodology-box">
-            <div class="methodology-title">🚀 The Challenge We're Solving</div>
+            <div class="methodology-title">🚀 The Challenge I'm Solving</div>
             <p><strong>Problem:</strong> India's economic growth remains concentrated in 15-20 metro districts, 
             leaving hundreds of districts with untapped investment potential but limited visibility to investors.</p>
-            
             <p><strong>Our Solution:</strong> Investment Atlas leverages artificial intelligence and comprehensive 
             data analysis to identify high-potential investment opportunities across districts in 4 major Indian states.</p>
-            
             <p><strong>Impact:</strong> We're democratizing access to sophisticated investment intelligence that was 
             previously available only to large consulting firms and institutional investors.</p>
-            
             <p><strong>Vision:</strong> To become the definitive platform for data-driven regional investment 
             decisions across emerging markets, starting with India and expanding globally.</p>
         </div>
@@ -2561,7 +2539,6 @@ def about_page():
         <div class="methodology-box">
             <div class="methodology-title">🎓 Professional Background</div>
             <p><strong>Dhruv Banerjee</strong> is a Tech Policy enthusiast, looking to leverage AI and Data Science to present practical alternative approaches to solve complex policy issues.</p>
-            
             <p><strong>Education & Skills:</strong></p>
             <ul>
                 <li><strong>Academic Background:</strong> MSc Data Science at the London School of Economics</li>
@@ -2569,10 +2546,8 @@ def about_page():
                 <li><strong>Business Acumen:</strong> Investment Analysis, Economic Development, Strategic Planning</li>
                 <li><strong>Domain Expertise:</strong> Emerging Tech, AI Policy, Agentic AI</li>
             </ul>
-            
             <p><strong>Motivation:</strong> This project was born from a passion for democratizing access to 
             sophisticated investment intelligence and supporting economic development in underserved regions.</p>
-            
             <p><strong>Career Goals:</strong> Seeking opportunities in management consulting, data science and public policy where analytical rigor meets strategic business impact.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -2631,7 +2606,7 @@ def about_page():
     <div class="problem-statement">
         <h3 class="problem-title">🗺️ Expansion Plans</h3>
         <p><strong>Phase 1 (Current):</strong> 4 states, 180+ districts, 5 key sectors</p>
-        <p><strong>Phase 2 (Q2 2025):</strong> Pan-India expansion - all 28 states, 700+ districts</p>
+        <p><strong>Phase 2 (Q3 2025):</strong> Pan-India expansion - all 28 states, 700+ districts</p>
         <p><strong>Phase 3 (Q4 2025):</strong> Real-time data integration and dynamic modeling</p>
         <p><strong>Phase 4 (2026):</strong> International expansion - Southeast Asia markets</p>
         <p><strong>Phase 5 (2027+):</strong> AI-powered policy impact simulation and recommendation engine</p>
@@ -2655,7 +2630,6 @@ def about_page():
                     <li><strong>End-to-End Delivery:</strong> From data collection to production deployment</li>
                     <li><strong>Communication Skills:</strong> Complex technical concepts presented clearly</li>
                 </ul>
-                
                 <strong>Available for:</strong> Full-time opportunities in consulting, data science, product management
             </div>
         </div>
@@ -2673,7 +2647,6 @@ def about_page():
                     <li><strong>Business Development:</strong> Commercial applications and scaling opportunities</li>
                     <li><strong>Investment:</strong> Funding for pan-India expansion and team building</li>
                 </ul>
-                
                 <strong>Contact us to discuss:</strong> partnerships, licensing, or investment opportunities
             </div>
         </div>
