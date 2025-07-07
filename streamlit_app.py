@@ -287,7 +287,7 @@ def load_data():
     """Load all processed data with error handling"""
     try:
         # Try multiple possible file locations and names
-        base_path = r"C:\Users\dhruv\Downloads\Investment Atlas\data\processed"
+        base_path = "data"
         possible_files = [
             # Your actual files with both current directory and full path
             'multi_state_economic_analysis.csv',
